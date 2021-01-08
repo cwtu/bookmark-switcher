@@ -1,7 +1,11 @@
 {
-  "description": "",
+  "description": "Switch toolbar bookmarks",
   "manifest_version": 2,
-  "name": "",
+  "name": "bookmark-switcher",
   "version": "1.0",
 
+  "browser_action": {
+    "browser_style": true,
+    "default_popup": "popup/bookmark_list.html"
+  }
 }
