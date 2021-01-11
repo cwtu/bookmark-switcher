@@ -4,8 +4,16 @@
   "name": "bookmark-switcher",
   "version": "1.0",
 
+  "background": {
+    "scripts": ["./popup/background.js"]
+  },
+
+  "permissions": [
+    "bookmarks"
+  ],
+
   "browser_action": {
     "browser_style": true,
-    "default_popup": "popup/bookmark_list.html"
+    "default_popup": "./popup/bookmark_list.html"
   }
 }
