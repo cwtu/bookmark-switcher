@@ -9,7 +9,8 @@
   },
 
   "permissions": [
-    "bookmarks"
+    "bookmarks",
+    "storage"
   ],
 
   "browser_action": {

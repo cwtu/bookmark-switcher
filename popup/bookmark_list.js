@@ -1,23 +1,25 @@
-
-
+browser.storage.local.get().then(result => {
+  if (!result["currentFolder"]) {
+    browser.storage.local.set({currentFolder: ".all"});
+  }
+});
+  
 document.addEventListener("click", async function(e) {
   if (!e.target.classList.contains("bookmark-folder")) {
     return;
   }
 
+  let currentFolder = (await browser.storage.local.get())["currentFolder"];
   let targetFolder = e.target.getAttribute("name");
   let folderId = await getId(targetFolder);
+
+  console.log("From: " + currentFolder + " To: " + targetFolder);
+
   
-  await moveBookmarks("toolbar_____", await getId(currentFolder));
-  await moveBookmarks(folderId, "toolbar_____");
-  currentFolder = targetFolder;
+  moveBookmarks("toolbar_____", await getId(currentFolder)).then(
+    moveBookmarks(folderId, "toolbar_____")
+  );
+  
+  browser.storage.local.set({currentFolder: targetFolder});
 });
 
-
-// async function moveBookmarks (fromId, toId){
-//   browser.bookmarks.getChildren(fromId).then(nodes => {
-//     nodes.forEach(e => {
-//       browser.bookmarks.move(e["id"], {parentId: toId});
-//     });
-//   });
-// }
