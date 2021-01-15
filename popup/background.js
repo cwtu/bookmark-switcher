@@ -9,14 +9,35 @@ async function getId (folderName) {
   }
 }
 
+
 async function moveBookmarks (fromId, toId){
   return browser.bookmarks.getChildren(fromId).then(async nodes => {
+    async function func (){
+      let i = 0;
 
-    for(let i = 0; i < nodes.length; i ++) {
-      await browser.bookmarks.move(nodes[i]["id"], {parentId: toId});
+      for (i = 0 ; i < nodes.length ;) {
+        await browser.bookmarks.move(nodes[i]["id"], {parentId: toId, index: i++})/* .then(() => console.log(nodes[i - 1])) */;
+      }
     }
+    await func();
+    
+
+    // await setIndex(toId);
+    
   });
 }
+
+async function setIndex (parentId) {
+  browser.bookmarks.getChildren(parentId).then(async nodes => {
+    let i = 0;
+
+    nodes.forEach(async e => {
+      await browser.bookmarks.move(e["id"], {index: i++});
+    });
+  });
+}
+
+
 
 async function showFolders (parentId) {
   return browser.bookmarks.getChildren(parentId).then(nodes => {
@@ -38,6 +59,7 @@ async function showFolders (parentId) {
 }
 
 let background = browser.bookmarks.search(".all").then( async array => {
+  // setIndex("toolbar_____");
   // create all folder under Other Bookmarks if all doesn't exist
   if (array.length === 0) {
     return (await browser.bookmarks.create({title: ".all", parentId: "unfiled_____"}))["id"];
@@ -58,27 +80,16 @@ let background = browser.bookmarks.search(".all").then( async array => {
     body.appendChild(all);
   });
 
-  // browser.bookmarks.getChildren(allId).then(nodes => {
-  //   let body = document.getElementsByTagName("BODY")[0];
-  //   let folderList = [];
-  
-  //   nodes.forEach(e => {
-  //     if (e["type"] === "folder"){
-  //       let folderDiv = document.createElement("DIV");
-  //       let text = document.createTextNode(e["title"]);
-  
-  //       folderDiv.appendChild(text);
-  //       folderDiv.setAttribute("class", "bookmark-folder");
-  //       folderDiv.setAttribute("name", e["title"]);
-  
-  //       body.appendChild(folderDiv);
-  //     }
-  //   });
-
-  // });
 });
 
-
+// browser.bookmarks.onMoved.addListener((id, moveInfo) => {
+//   console.log("Item: " + id + " moved");
+//   console.log("Old index: " + moveInfo.oldIndex);
+//   console.log("New index: " + moveInfo.index);
+//   console.log("Old folder: " + moveInfo.oldParentId);
+//   console.log("New folder: " + moveInfo.parentId);
+//   // setIndex(moveInfo.parentId);
+// });
 
 
 
