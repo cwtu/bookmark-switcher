@@ -1,5 +1,5 @@
 async function getId (folderName) {
-  let folderArray = await browser.bookmarks.search(folderName);
+  let folderArray = await browser.bookmarks.search({title: folderName});
   if (folderArray.length === 1 ){
     return folderArray[0]["id"];
   } else if (folderArray.length === 0) {
@@ -9,37 +9,17 @@ async function getId (folderName) {
   }
 }
 
-
-async function moveBookmarks (fromId, toId){
+function moveBookmarks (fromId, toId){
   return browser.bookmarks.getChildren(fromId).then(async nodes => {
-    async function func (){
-      let i = 0;
-
-      for (i = 0 ; i < nodes.length ;) {
-        await browser.bookmarks.move(nodes[i]["id"], {parentId: toId, index: i++})/* .then(() => console.log(nodes[i - 1])) */;
-      }
-    }
-    await func();
-    
-
-    // await setIndex(toId);
-    
-  });
-}
-
-async function setIndex (parentId) {
-  browser.bookmarks.getChildren(parentId).then(async nodes => {
     let i = 0;
 
-    nodes.forEach(async e => {
-      await browser.bookmarks.move(e["id"], {index: i++});
-    });
+    for (i = 0 ; i < nodes.length ;) {
+      await browser.bookmarks.move(nodes[i]["id"], {parentId: toId, index: i++});
+    }
   });
 }
 
-
-
-async function showFolders (parentId) {
+function showFolders (parentId) {
   return browser.bookmarks.getChildren(parentId).then(nodes => {
     let body = document.getElementsByTagName("BODY")[0];
   
@@ -58,39 +38,30 @@ async function showFolders (parentId) {
   });
 }
 
-let background = browser.bookmarks.search(".all").then( async array => {
-  // setIndex("toolbar_____");
+let background = browser.bookmarks.search({title: ".all"}).then( async array => {
   // create all folder under Other Bookmarks if all doesn't exist
   if (array.length === 0) {
     return (await browser.bookmarks.create({title: ".all", parentId: "unfiled_____"}))["id"];
   } else{
     return array[0]["id"];
   }  
-}).then(allId => {
+}).then(async allId => {
 
   // show all the folders
-  showFolders(allId).then(showFolders("toolbar_____")).then(() => {
-    let body = document.getElementsByTagName("BODY")[0];
-    let all = document.createElement("DIV");
-    let text = document.createTextNode("All");
-  
-    all.appendChild(text);
-    all.setAttribute("class", "bookmark-folder");
-    all.setAttribute("name", ".all")
-    body.appendChild(all);
-  });
+  await showFolders("toolbar_____");
+  await showFolders(allId);
+
+  // create element for all bookmarks
+  let body = document.getElementsByTagName("BODY")[0];
+  let all = document.createElement("DIV");
+  let text = document.createTextNode("All");
+
+  all.appendChild(text);
+  all.setAttribute("class", "bookmark-folder");
+  all.setAttribute("name", ".all")
+  body.appendChild(all);
 
 });
-
-// browser.bookmarks.onMoved.addListener((id, moveInfo) => {
-//   console.log("Item: " + id + " moved");
-//   console.log("Old index: " + moveInfo.oldIndex);
-//   console.log("New index: " + moveInfo.index);
-//   console.log("Old folder: " + moveInfo.oldParentId);
-//   console.log("New folder: " + moveInfo.parentId);
-//   // setIndex(moveInfo.parentId);
-// });
-
 
 
 

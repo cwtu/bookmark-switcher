@@ -1,10 +1,10 @@
+// check for currentFolder variable in local storage
 browser.storage.local.get().then(result => {
   if (!result["currentFolder"]) {
     browser.storage.local.set({currentFolder: ".all"});
   }
 });
 
-  
 document.addEventListener("click", async function(e) {
   if (!e.target.classList.contains("bookmark-folder")) {
     return;
@@ -18,15 +18,12 @@ document.addEventListener("click", async function(e) {
   let currentId = await getId(currentFolder);
   let targetId = await getId(targetFolder);
 
-
-
-  console.log("From: " + currentFolder + " To: " + targetFolder);
-
-  
   await moveBookmarks("toolbar_____", currentId);
   await moveBookmarks(targetId, "toolbar_____");
 
-  browser.storage.local.set({currentFolder: targetFolder});
+  // update currentFolder and reload
+  await browser.storage.local.set({currentFolder: targetFolder});
+  window.location.reload();
   
 });
 

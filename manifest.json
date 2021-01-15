@@ -15,6 +15,10 @@
 
   "browser_action": {
     "browser_style": true,
-    "default_popup": "./popup/bookmark_list.html"
+    "default_popup": "./popup/bookmark_list.html",
+    "default_icon": {
+      "48": "./bookmark_icon.svg",
+      "96": "./bookmark_icon.svg"
+    }
   }
 }
